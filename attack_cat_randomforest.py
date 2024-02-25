@@ -1,5 +1,6 @@
 from sklearn.ensemble import RandomForestClassifier
-from sklearn.metrics import accuracy_score, classification_report
+from sklearn.metrics import accuracy_score, classification_report, f1_score
+
 import pandas as pd
 import struct, socket
 
@@ -27,10 +28,59 @@ val_data['sport'] = pd.to_numeric(val_data['sport'], errors='coerce')
 train_data['dsport'] = pd.to_numeric(train_data['dsport'], errors='coerce')
 val_data['dsport'] = pd.to_numeric(val_data['dsport'], errors='coerce')
 
+train_data['ct_ftp_cmd'] = train_data['ct_ftp_cmd'].fillna(-1, inplace=True)
+val_data['ct_ftp_cmd'] = val_data['ct_ftp_cmd'].fillna(-1, inplace=True)
+train_data['ct_ftp_cmd'] = pd.to_numeric(train_data['ct_ftp_cmd'], errors='coerce')
+val_data['ct_ftp_cmd'] = pd.to_numeric(val_data['ct_ftp_cmd'], errors='coerce')
+
 #selected_columns = ['sttl', 'ct_state_ttl', 'dttl', 'tcprtt', 'ackdat', 'synack', 'Ltime', 'Stime', 'dmeansz', 'Dload', 'state']
-selected_columns = ['srcip','sport', 'dsport', 'dsport'
-                    #'Stime', 'dmeansz', 'Dload', 'state',
-                    #'sport', 'dsport', 'proto', 'service', 'Spkts', 'Dpkts'
+selected_columns = ['srcip',
+                    'sport',
+                    'dstip',
+                    'dsport',
+                    'proto',
+                    'state',
+                    'dur',
+                    'sbytes',
+                    'dbytes',
+                    'sttl',
+                    'dttl',
+                    'sloss',
+                    'dloss',
+                    'service',
+                    'Sload',
+                    'Dload',
+                    'Spkts',
+                    'Dpkts',
+                    'swin',
+                    'dwin',
+                    'stcpb',
+                    'dtcpb',
+                    'smeansz',
+                    'dmeansz',
+                    'trans_depth',
+                    'res_bdy_len',
+                    'Sjit',
+                    'Djit',
+                    'Stime',
+                    'Ltime',
+                    'Sintpkt',
+                    'Dintpkt',
+                    'tcprtt',
+                    'synack',
+                    'ackdat' ,
+                    'is_sm_ips_ports',
+                    'ct_state_ttl',
+                    'ct_flw_http_mthd',
+                    'is_ftp_login',
+                    'ct_ftp_cmd',
+                    'ct_srv_src',
+                    'ct_srv_dst',
+                    'ct_dst_ltm',
+                    'ct_src_ ltm',
+                    'ct_src_dport_ltm',
+                    'ct_dst_sport_ltm',
+                    'ct_dst_src_ltm'
                     ]
 # Split the data into features and the target variable
 X_train = train_data[selected_columns]  # Features for training
@@ -55,4 +105,7 @@ print("Validation Accuracy:", val_accuracy)
 # Print classification report for validation set
 print("Validation Classification Report:")
 print(classification_report(y_val, y_val_pred))
+
+macro_f1 = f1_score(y_val, y_val_pred, average='macro')
+print("Macro-F1 Score:", macro_f1)
 
