@@ -17,7 +17,7 @@ def do_random_forest_OneColumn(train_data, val_data, columnName):
     y_val = val_data['attack_cat']                     # Target variable for validation
 
     # Create an instance of the Random Forest classifier
-    rf_classifier = RandomForestClassifier(n_estimators=10, random_state=42)
+    rf_classifier = RandomForestClassifier(n_estimators=100, random_state=42)
 
     # Train the classifier on the training data
     rf_classifier.fit(X_train, y_train)
@@ -26,28 +26,6 @@ def do_random_forest_OneColumn(train_data, val_data, columnName):
     y_val_pred = rf_classifier.predict(X_val)
 
     print("For Column:", columnName)
-
-    macro_f1 = f1_score(y_val, y_val_pred, average='macro')
-    print("Macro-F1 Score:", macro_f1)
-
-    micro_f1 = f1_score(y_val, y_val_pred, average='micro')
-    print("Micro-F1 Score:", micro_f1)
-def do_random_forest(train_data, val_data, selected_columns):
-    # Split the data into features and the target variable
-    X_train = train_data[selected_columns]  # Features for training
-    y_train = train_data['attack_cat']                # Target variable for training
-
-    X_val = val_data[selected_columns]      # Features for validation
-    y_val = val_data['attack_cat']                     # Target variable for validation
-
-    # Create an instance of the Random Forest classifier
-    rf_classifier = RandomForestClassifier(n_estimators=10, random_state=42)
-
-    # Train the classifier on the training data
-    rf_classifier.fit(X_train, y_train)
-
-    # Make predictions on the validation data
-    y_val_pred = rf_classifier.predict(X_val)
 
     macro_f1 = f1_score(y_val, y_val_pred, average='macro')
     print("Macro-F1 Score:", macro_f1)
@@ -79,9 +57,14 @@ val_data['ct_ftp_cmd'] = val_data['ct_ftp_cmd'].fillna(-1, inplace=True)
 train_data['ct_ftp_cmd'] = pd.to_numeric(train_data['ct_ftp_cmd'], errors='coerce')
 val_data['ct_ftp_cmd'] = pd.to_numeric(val_data['ct_ftp_cmd'], errors='coerce')
 
+columns_to_process = ['srcip', 'sport', 'dstip', 'dsport', 'proto', 'state', 'dur', 'sbytes', 'dbytes', 'sttl',
+                      'dttl', 'sloss', 'dloss', 'service', 'Sload', 'Dload', 'Spkts', 'Dpkts', 'swin', 'dwin',
+                      'stcpb', 'dtcpb', 'smeansz', 'dmeansz', 'trans_depth', 'res_bdy_len', 'Sjit', 'Djit',
+                      'Stime', 'Ltime', 'Sintpkt', 'Dintpkt', 'tcprtt', 'synack', 'ackdat', 'is_sm_ips_ports',
+                      'ct_state_ttl', 'ct_flw_http_mthd', 'is_ftp_login', 'ct_ftp_cmd', 'ct_srv_src', 'ct_srv_dst',
+                      'ct_dst_ltm', 'ct_src_ltm', 'ct_src_dport_ltm', 'ct_dst_sport_ltm', 'ct_dst_src_ltm']
 
-
-print("Selected from Macro F1 increase")
-columns_to_process = ['sbytes', 'dbytes', 'smeansz', 'sttl', 'srcip', 'Dload', 'dsport', 'dur', 'Ltime', 'Stime', 'Sjit', 'ackdat', 'Spkts', 'res_bdy_len', 'dloss', 'swin', 'ct_srv_dst', 'is_ftp_login', 'stcpb', 'ct_flw_http_mthd',  'trans_depth', 'dstip', 'ct_ftp_cmd']
-do_random_forest(train_data, val_data, columns_to_process)
+# Call the function for each column
+for column in columns_to_process:
+    do_random_forest_OneColumn(train_data, val_data, column)
 
