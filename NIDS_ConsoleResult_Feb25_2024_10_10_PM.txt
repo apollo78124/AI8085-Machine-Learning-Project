@@ -1,0 +1,230 @@
+D:\PythonProjects\machinelearningpractice\.venv\Scripts\python.exe D:\PythonProjects\machinelearningpractice\NIDS.py 
+D:\PythonProjects\machinelearningpractice\NIDS.py:6: DeprecationWarning: 
+Pyarrow will become a required dependency of pandas in the next major release of pandas (pandas 3.0),
+(to allow more performant data types, such as the Arrow string type, and better interoperability with other libraries)
+but was not found to be installed on your system.
+If this would cause problems for you,
+please provide us feedback at https://github.com/pandas-dev/pandas/issues/54466
+        
+  import pandas as pd
+Project 1 Result Start
+
+
+###############################################
+
+Part 1 Feature Importance Analysis:
+Selected features for 'attack_cat':
+Index(['srcip', 'dsport', 'proto', 'dur', 'sbytes', 'sttl', 'service',
+       'smeansz', 'Stime', 'ct_dst_src_ltm'],
+      dtype='object')
+Selected features for 'Label':
+Index(['srcip', 'sport', 'dsport', 'state', 'dur', 'sbytes', 'sttl', 'dmeansz',
+       'tcprtt', 'ct_state_ttl'],
+      dtype='object')
+Feature rankings for 'attack_cat':
+[1 2 4 1 1 5 1 1 2 1 5 3 3 1 2 4 5 3 5 5 4 5 1 2 5 5 4 4 1 3 3 3 3 4 4 5 2
+ 3 4 4 2 3 3 4 2 5 1]
+Feature rankings for 'Label':
+[1 1 2 1 4 1 1 1 3 1 2 5 3 5 2 2 4 4 5 5 4 4 2 1 5 4 4 4 3 3 3 2 1 3 2 5 1
+ 5 5 5 3 3 4 3 4 5 3]
+
+###############################################
+
+Part 1 Covariance Analysis:
+Correlation with 'Label' column:
+Label               1.000000
+sttl                0.928189
+srcip               0.923844
+ct_state_ttl        0.913025
+attack_cat          0.754201
+ct_dst_src_ltm      0.510851
+ct_dst_sport_ltm    0.495346
+Ltime               0.459970
+Stime               0.459970
+ct_src_dport_ltm    0.458760
+ct_srv_dst          0.452972
+ct_srv_src          0.452037
+ct_src_ ltm         0.400097
+ct_dst_ltm          0.392768
+Sload               0.245577
+ackdat              0.192416
+tcprtt              0.186108
+synack              0.159234
+proto               0.141617
+dttl                0.122251
+ct_flw_http_mthd    0.066467
+is_ftp_login        0.026003
+Sjit                0.021666
+sbytes              0.008105
+dur                 0.001760
+Dintpkt            -0.019955
+is_sm_ips_ports    -0.030662
+trans_depth        -0.031695
+sloss              -0.033709
+Sintpkt            -0.037346
+res_bdy_len        -0.045686
+service            -0.053889
+dstip              -0.080927
+smeansz            -0.094980
+Djit               -0.102473
+dbytes             -0.129747
+Spkts              -0.140395
+dloss              -0.161195
+Dpkts              -0.195927
+sport              -0.208517
+dtcpb              -0.374613
+stcpb              -0.376067
+dsport             -0.391727
+Dload              -0.408725
+ct_ftp_cmd         -0.433804
+dmeansz            -0.461187
+dwin               -0.469899
+swin               -0.471351
+state              -0.618461
+Name: Label, dtype: float64
+Correlation with 'attack_cat' column:
+attack_cat          1.000000
+Label               0.754201
+srcip               0.696764
+sttl                0.689812
+ct_state_ttl        0.616004
+dttl                0.361506
+tcprtt              0.353209
+ackdat              0.348715
+synack              0.317118
+Ltime               0.295144
+Stime               0.295143
+Sload               0.194505
+ct_dst_src_ltm      0.171310
+proto               0.156178
+ct_dst_sport_ltm    0.155696
+ct_src_dport_ltm    0.143665
+ct_srv_src          0.127404
+ct_srv_dst          0.123259
+ct_src_ ltm         0.102109
+Sjit                0.097960
+ct_dst_ltm          0.088852
+ct_flw_http_mthd    0.080832
+smeansz             0.036255
+is_ftp_login        0.019432
+dur                 0.017554
+Dintpkt             0.012253
+sbytes              0.010200
+trans_depth        -0.000654
+Sintpkt            -0.010933
+sloss              -0.018151
+is_sm_ips_ports    -0.023125
+res_bdy_len        -0.035584
+Djit               -0.046972
+dstip              -0.061035
+service            -0.091273
+Spkts              -0.095397
+dbytes             -0.099422
+sport              -0.113095
+dloss              -0.120898
+Dpkts              -0.143533
+dtcpb              -0.158524
+stcpb              -0.159164
+dwin               -0.198378
+swin               -0.199516
+dsport             -0.269892
+ct_ftp_cmd         -0.277009
+state              -0.299338
+Dload              -0.308101
+dmeansz            -0.330082
+Name: attack_cat, dtype: float64
+
+###############################################
+
+Part 2 RandomForest Classification:
+Validation Accuracy: 0.989517563361494
+Validation Classification Report:
+              precision    recall  f1-score   support
+
+           0       0.99      0.99      0.99     45241
+           1       0.99      0.99      0.99     44719
+
+    accuracy                           0.99     89960
+   macro avg       0.99      0.99      0.99     89960
+weighted avg       0.99      0.99      0.99     89960
+
+
+###############################################
+
+Part 2 KNN Classification:
+Validation Accuracy: 0.9924744330813695
+Validation Classification Report:
+              precision    recall  f1-score   support
+
+           0       1.00      0.99      0.99     45241
+           1       0.99      1.00      0.99     44719
+
+    accuracy                           0.99     89960
+   macro avg       0.99      0.99      0.99     89960
+weighted avg       0.99      0.99      0.99     89960
+
+
+###############################################
+
+Part 3 Randomforest Classification:
+Validation Classification Report:
+              precision    recall  f1-score   support
+
+          -1       1.00      0.99      0.99     45241
+           0       0.94      0.98      0.96     29917
+           1       0.31      0.08      0.13      6188
+           2       0.15      0.43      0.22      2325
+           3       0.64      0.77      0.70      1676
+           4       0.08      0.00      0.00      2713
+           5       0.00      0.00      0.00       689
+           6       0.00      0.00      0.00        82
+           7       0.00      0.00      0.00       374
+           8       0.00      0.00      0.00       243
+           9       0.01      0.01      0.01       278
+          10       0.00      0.00      0.00       181
+          11       0.00      0.00      0.00        30
+          12       0.69      0.39      0.50        23
+
+    accuracy                           0.85     89960
+   macro avg       0.27      0.26      0.25     89960
+weighted avg       0.85      0.85      0.85     89960
+
+Macro-F1 Score: 0.25063029631938877
+Micro-F1 Score: 0.8529346376167185
+
+###############################################
+
+Part 3 KNN Classification:
+Validation Accuracy: 0.5277153974430239
+Validation Classification Report:
+              precision    recall  f1-score   support
+
+          -1       1.00      0.99      0.99     45231
+           0       0.05      0.00      0.01     29917
+           1       0.00      0.01      0.00      6188
+           2       0.16      0.58      0.26      2325
+           3       0.75      0.74      0.75      1676
+           4       0.09      0.01      0.02      2713
+           5       0.00      0.00      0.00       689
+           6       0.00      0.00      0.00        82
+           7       0.00      0.00      0.00       374
+           8       0.00      0.00      0.00       243
+           9       0.05      0.03      0.04       278
+          10       0.00      0.00      0.00       181
+          11       0.00      0.00      0.00        30
+          12       1.00      0.09      0.16        23
+
+    accuracy                           0.53     89950
+   macro avg       0.22      0.18      0.16     89950
+weighted avg       0.54      0.53      0.52     89950
+
+Macro-F1 Score: 0.15868477383279403
+Micro-F1 Score: 0.5277153974430239
+
+###############################################
+
+End Of Project 1 Results
+Group Eunhak, Kartik, Nam
+###############################################
+
+Process finished with exit code 0

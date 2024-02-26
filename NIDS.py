@@ -1,5 +1,6 @@
 import numpy as np
 from sklearn.ensemble import RandomForestClassifier
+from sklearn.feature_selection import RFE
 from sklearn.metrics import accuracy_score, classification_report, f1_score
 
 import pandas as pd
@@ -13,6 +14,82 @@ from sklearn.preprocessing import StandardScaler
 def ip_to_numeric(ip):
     return struct.unpack("!L", socket.inet_aton(ip))[0]
 
+def featureImportancePart1() :
+    print("\n###############################################\n")
+    print("Part 1 Feature Importance Analysis:")
+    # Prepare your data
+    selected_columns = ['srcip','sport','dstip','dsport','proto','state','dur','sbytes','dbytes','sttl','dttl','sloss','dloss','service','Sload','Dload','Spkts','Dpkts','swin','dwin','stcpb','dtcpb','smeansz','dmeansz','trans_depth','res_bdy_len','Sjit','Djit','Stime','Ltime','Sintpkt','Dintpkt','tcprtt','synack','ackdat','is_sm_ips_ports','ct_state_ttl','ct_flw_http_mthd','is_ftp_login','ct_ftp_cmd','ct_srv_src','ct_srv_dst','ct_dst_ltm','ct_src_ ltm','ct_src_dport_ltm','ct_dst_sport_ltm','ct_dst_src_ltm']
+    # Load the training, validation, and test sets from separate CSV files
+    train_df = pd.read_csv('./clean_train.csv',
+                             dtype={"srcip": "string", "sport": "string", "dstip": "string", "dsport": "string"},
+                             low_memory=False)
+
+    # Convert IP addresses to integer representation
+    train_df['srcip'] = train_df['srcip'].apply(ip_to_numeric)
+    train_df['dstip'] = train_df['dstip'].apply(ip_to_numeric)
+    # Drop the original 'srcip' columns
+
+    train_df['sport'] = pd.to_numeric(train_df['sport'], errors='coerce')
+    train_df['dsport'] = pd.to_numeric(train_df['dsport'], errors='coerce')
+
+    train_df['ct_ftp_cmd'] = train_df['ct_ftp_cmd'].replace(' ', '-1').fillna('-1').astype(str)
+
+    train_df.replace('-', np.nan, inplace=True)
+    train_df.dropna(inplace=True)
+    X = train_df[selected_columns]
+    y_attack_cat = train_df['attack_cat']
+    y_label = train_df['Label']
+
+    # Initialize Random Forest classifiers
+    rf_classifier_attack_cat = RandomForestClassifier(n_estimators=10, random_state=42)
+    rf_classifier_label = RandomForestClassifier(n_estimators=10, random_state=42)
+
+    # Perform Recursive Feature Elimination (RFE) for 'Label'
+    rfe_label = RFE(rf_classifier_label, n_features_to_select=10, step=10)
+    rfe_label.fit(X, y_label)
+
+    # Perform Recursive Feature Elimination (RFE) for 'attack_cat'
+    rfe_attack_cat = RFE(rf_classifier_attack_cat, n_features_to_select=10, step=10)
+    rfe_attack_cat.fit(X, y_attack_cat)
+
+    # Get selected features for 'attack_cat'
+    selected_features_attack_cat = X.columns[rfe_attack_cat.support_]
+
+    # Get selected features for 'Label'
+    selected_features_label = X.columns[rfe_label.support_]
+
+    # Print selected features for 'attack_cat'
+    print("Selected features for 'attack_cat':")
+    print(selected_features_attack_cat)
+
+    # Print selected features for 'Label'
+    print("Selected features for 'Label':")
+    print(selected_features_label)
+
+    # Train the models using selected features
+    rf_classifier_attack_cat.fit(X[selected_features_attack_cat], y_attack_cat)
+    rf_classifier_label.fit(X[selected_features_label], y_label)
+
+    # Print feature rankings for 'attack_cat'
+    print("Feature rankings for 'attack_cat':")
+    print(rfe_attack_cat.ranking_)
+
+    # Print feature rankings for 'Label'
+    print("Feature rankings for 'Label':")
+    print(rfe_label.ranking_)
+
+def covariance_Part1(data) :
+    print("\n###############################################\n")
+    print("Part 1 Covariance Analysis:")
+    correlation_matrix = data.corr()
+    correlation_with_label = correlation_matrix['Label'].sort_values(ascending=False)
+    print("Correlation with 'Label' column:")
+    print(correlation_with_label)
+
+    correlation_matrix = data.corr()
+    correlation_with_label = correlation_matrix['attack_cat'].sort_values(ascending=False)
+    print("Correlation with 'attack_cat' column:")
+    print(correlation_with_label)
 def do_RandomForest_Part2(train_data, val_data, selected_columns):
     print("\n###############################################\n")
     print("Part 2 RandomForest Classification:")
@@ -153,6 +230,10 @@ val_data['dsport'] = pd.to_numeric(val_data['dsport'], errors='coerce')
 train_data['ct_ftp_cmd'] = train_data['ct_ftp_cmd'].replace(' ', '-1').fillna('-1').astype(str)
 val_data['ct_ftp_cmd'] = val_data['ct_ftp_cmd'].replace(' ', '-1').fillna('-1').astype(str)
 
+print("Project 1 Result Start\n")
+featureImportancePart1()
+
+covariance_Part1(train_data)
 #Selected Features For Part 2 RandomForest
 selected_columns = ['sttl', 'ct_state_ttl', 'dttl', 'tcprtt', 'ct_dst_src_ltm', 'state']
 do_RandomForest_Part2(train_data, val_data, selected_columns)
