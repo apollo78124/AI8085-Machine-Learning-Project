@@ -5,7 +5,7 @@ import pandas as pd
 from tqdm import tqdm
 
 # Load data from JSON file
-data = pd.read_json("./yelp_reviews_validation_set.json")
+data = pd.read_json("./yelp_reviews_validation_100k.json")
 
 # Load saved model
 model_name = 'bert-base-cased'
@@ -15,7 +15,7 @@ model.load_state_dict(torch.load("bert_sentiment_model.pth"))
 model.eval()
 
 # Tokenize and encode the text data
-max_len = 128  # You can adjust this value according to your needs
+max_len = 512  # You can adjust this value according to your needs
 tokenized_texts = [tokenizer.encode(text, add_special_tokens=True, max_length=max_len, truncation=True) for text in data['text']]
 
 # Pad tokenized sequences
@@ -35,6 +35,7 @@ model.to(device)
 correct = 0
 total = 0
 
+
 with torch.no_grad():
     for batch in tqdm(val_dataloader, desc="Validation"):
         batch = tuple(t.to(device) for t in batch)
@@ -46,4 +47,5 @@ with torch.no_grad():
 
 # Calculate accuracy
 accuracy = correct / total * 100
+print("Total: {:.2f}".format(total))
 print("Validation Accuracy: {:.2f}%".format(accuracy))

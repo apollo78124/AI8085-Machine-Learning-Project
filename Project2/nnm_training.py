@@ -7,7 +7,7 @@ from transformers import AdamW, get_linear_schedule_with_warmup
 from tqdm import tqdm
 
 # Load data from JSON file
-data = pd.read_json("./yelp_reviews_step1.json")
+data = pd.read_json("./yelp_reviews_training_100k.json")
 
 # Define BERT model and tokenizer
 model_name = 'bert-base-cased'
@@ -15,7 +15,7 @@ tokenizer = BertTokenizer.from_pretrained(model_name)
 model = BertForSequenceClassification.from_pretrained(model_name, num_labels=5)
 
 # Tokenize and encode the text data
-max_len = 128  # You can adjust this value according to your needs
+max_len = 255  # You can adjust this value according to your needs
 tokenized_texts = [tokenizer.encode(text, add_special_tokens=True, max_length=max_len, truncation=True) for text in
                    data['text']]
 
@@ -30,7 +30,7 @@ train_inputs, val_inputs, train_labels, val_labels = train_test_split(padded_seq
                                                                       test_size=0.1)
 
 # Create data loaders
-batch_size = 32
+batch_size = 28
 train_data = TensorDataset(train_inputs, train_labels)
 train_sampler = RandomSampler(train_data)
 train_dataloader = DataLoader(train_data, sampler=train_sampler, batch_size=batch_size)

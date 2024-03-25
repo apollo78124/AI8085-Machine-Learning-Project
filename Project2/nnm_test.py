@@ -9,7 +9,7 @@ model.load_state_dict(torch.load("bert_sentiment_model.pth"))
 model.eval()
 
 # Input string for prediction
-input_string = "REALLY below average food.  Akin to waffle house.  I wanted this to be good based on the reviews but not so.  The pancakes tasted like a frozen processed version, \"homemade\" maple syrup was watery/sugary with fake flavoring.  Trees make authentic syrup, not people.  The hash browns were greasy and fairly tasteless. The bacon overcooked, hard and chewy.  Obviously had been sitting awhile. Overall, very uninspired food.  Unfortunately, this is one of those places that is living on an outdated \"must go\" reputation.  There are much better offerings in Nashville."
+input_string = "I haven't been to the pub for years and was pleasantly surprised. Great atmosphere. Great food. Our server (Kassandra) was terrific. Resolved any issues with elegance and made our dinner great (xtra vinegar great touch). Definitely returning"
 
 # Tokenize input string
 tokens = tokenizer.encode_plus(input_string, add_special_tokens=True, max_length=128, truncation=True, return_tensors='pt')
