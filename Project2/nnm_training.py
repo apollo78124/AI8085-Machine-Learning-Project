@@ -1,3 +1,5 @@
+import pickle
+
 import torch
 import pandas as pd
 from sklearn.model_selection import train_test_split
@@ -84,4 +86,5 @@ for epoch in range(epochs):
     print("Average validation loss: {:.2f}".format(avg_val_loss))
 
 # Save the trained model
-torch.save(model.state_dict(), "bert_sentiment_model.pth")
+with open('neural_network_model_project2.pkl', 'wb') as f:
+    pickle.dump(model, f)
