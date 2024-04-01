@@ -5,6 +5,7 @@ import random
 import string
 import matplotlib.pyplot as plt
 import seaborn as sns
+import joblib
 
 from sklearn.feature_extraction.text import TfidfVectorizer
 from sklearn.model_selection import train_test_split
@@ -15,7 +16,6 @@ from sklearn.naive_bayes import MultinomialNB
 from sklearn.feature_extraction.text import ENGLISH_STOP_WORDS
 from gensim.models import KeyedVectors
 from sklearn.linear_model import LogisticRegression
-
 
 # Function to process a chunk of data
 def process_chunk(chunk):
@@ -30,13 +30,11 @@ def process_chunk(chunk):
         y_chunk.append(row['stars'])
     return X_chunk, y_chunk
 
-
 # Function to remove stop words from text
 def remove_stop_words(text):
     words = text.split()
     filtered_words = [word for word in words if word.lower() not in ENGLISH_STOP_WORDS]
     return ' '.join(filtered_words)
-
 
 # Function to add random noise to text
 def add_noise(text, noise_level=0.1):
@@ -46,7 +44,6 @@ def add_noise(text, noise_level=0.1):
     for idx in noisy_indices:
         noisy_text[idx] = random.choice(string.ascii_letters)
     return ''.join(noisy_text)
-
 
 # Load the data in chunks and process them in parallel
 data_path = "C:/Users/kunnu/Desktop/COMP 8085/Project 2/yelp_academic_dataset_review.json"
@@ -99,6 +96,9 @@ X_test_vectorized = vectorizer.transform(X_test)
 nb_model = MultinomialNB(alpha=0.1)  # Assuming best alpha is 0.1
 nb_model.fit(X_train_vectorized, y_train)
 
+# Save the trained model
+joblib.dump(nb_model, 'naive_bayes_model.pkl')
+
 # Make predictions on the validation set
 y_val_pred = nb_model.predict(X_val_vectorized)
 y_test_pred = nb_model.predict(X_test_vectorized)
@@ -136,6 +136,9 @@ X_val_vectorized_stopwords = vectorizer_stopwords.transform(X_val_processed_stop
 nb_model_stopwords = MultinomialNB()
 nb_model_stopwords.fit(X_train_vectorized_stopwords, y_train)
 
+# Save the trained model with stop words removal
+joblib.dump(nb_model_stopwords, 'naive_bayes_model_with_stopwords_removal.pkl')
+
 # Evaluate the model with stop words removal
 y_pred_stopwords = nb_model_stopwords.predict(X_val_vectorized_stopwords)
 accuracy_stopwords = accuracy_score(y_val, y_pred_stopwords)
@@ -144,7 +147,6 @@ print("Experiment 1: Impact of Stop Words Removal")
 print(f"Validation Accuracy with Stop Words Removal: {accuracy_stopwords:.2f}")
 print("Classification Report with Stop Words Removal:")
 print(classification_report(y_val, y_pred_stopwords))
-
 
 # Add noise to the processed text
 X_train_noisy = [add_noise(text) for text in X_train]
@@ -159,6 +161,9 @@ X_val_vectorized_noisy = vectorizer_noisy.transform(X_val_noisy)
 nb_model_noisy = MultinomialNB()
 nb_model_noisy.fit(X_train_vectorized_noisy, y_train)
 
+# Save the trained model with noisy data
+joblib.dump(nb_model_noisy, 'naive_bayes_model_with_noisy_data.pkl')
+
 # Evaluate the model with noisy data
 y_pred_noisy = nb_model_noisy.predict(X_val_vectorized_noisy)
 accuracy_noisy = accuracy_score(y_val, y_pred_noisy)
@@ -167,7 +172,6 @@ print("Experiment 2: Model Robustness to Noisy Data")
 print(f"Validation Accuracy with Noisy Data: {accuracy_noisy:.2f}")
 print("Classification Report with Noisy Data:")
 print(classification_report(y_val, y_pred_noisy))
-
 
 # Load pre-trained word embeddings (GloVe)
 # Convert GloVe embeddings to Word2Vec format
@@ -191,13 +195,25 @@ X_train_glove_embeddings = [text_to_glove_embeddings(text) for text in X_train]
 X_val_glove_embeddings = [text_to_glove_embeddings(text) for text in X_val]
 X_test_glove_embeddings = [text_to_glove_embeddings(text) for text in X_test]
 
-
 # Train logistic regression model with GloVe embeddings
 logreg_model_glove = LogisticRegression()
 logreg_model_glove.fit(X_train_glove_embeddings, y_train)
+
+# Save the trained model with GloVe embeddings
+joblib.dump(logreg_model_glove, 'logistic_regression_model_with_glove_embeddings.pkl')
 
 # Evaluate the model with GloVe embeddings
 accuracy_glove = logreg_model_glove.score(X_val_glove_embeddings, y_val)
 
 print("Experiment 3: Transfer Learning with Pre-trained Embeddings")
 print(f"Validation Accuracy with GloVe Embeddings: {accuracy_glove:.2f}")
+
+import pickle
+
+# Pickle the Naive Bayes model
+with open("naive_bayes_model.pkl", "wb") as file:
+    pickle.dump(nb_model, file)
+
+# Pickle the TF-IDF vectorizer
+with open("tfidf_vectorizer.pkl", "wb") as file:
+    pickle.dump(vectorizer, file)
